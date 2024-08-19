@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  telegram-bot:
+    image: jukusoft/daily-standup-telegram-bot:latest # Ersetze durch dein tatsächliches Docker-Image
+    container_name: daily-standup-telegram-bot
+    environment:
+      - TELEGRAM_BOT_API_KEY=${TELEGRAM_BOT_API_KEY} # Stelle sicher, dass diese Variable in deiner .env-Datei gesetzt ist oder manuell übergeben wird
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
