@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"strings"
 	"testing"
 	"time"
 )
@@ -56,7 +54,7 @@ func TestWeeklySummary(t *testing.T) {
 	summary := GenerateWeeklySummary()
 
 	// Überprüfe die erzeugte Zusammenfassung
-	expected := "@testuser: 5 Tage 🚀🤩\n"
+	expected := "**Wochenstatistik** 📊\n@testuser: 5 Tage 🚀🤩\n"
 	if summary != expected {
 		t.Errorf("Erwartete Zusammenfassung '%s', aber es wurde '%s' erzeugt", expected, summary)
 	}
@@ -73,49 +71,8 @@ func TestWeeklySummaryPartial(t *testing.T) {
 	summary := GenerateWeeklySummary()
 
 	// Überprüfe die erzeugte Zusammenfassung
-	expected := "@testuser: 3 Tage 🙏\n"
+	expected := "**Wochenstatistik** 📊\n@testuser: 3 Tage 🙏\n"
 	if summary != expected {
 		t.Errorf("Erwartete Zusammenfassung '%s', aber es wurde '%s' erzeugt", expected, summary)
 	}
-}
-
-func RecordActivity(userID int64, userName string, now time.Time) {
-	if now.Weekday() >= time.Monday && now.Weekday() <= time.Friday {
-		if activity, exists := userActivities[userID]; exists {
-			activity.Days[now.Weekday()-time.Monday] = true
-		} else {
-			var days [5]bool
-			days[now.Weekday()-time.Monday] = true
-			userActivities[userID] = &UserActivity{
-				UserID:   userID,
-				UserName: userName,
-				Days:     days,
-			}
-		}
-	}
-}
-
-func GenerateWeeklySummary() string {
-	var sb strings.Builder
-	for _, activity := range userActivities {
-		sb.WriteString(fmt.Sprintf("@%s: ", activity.UserName))
-		daysActive := 0
-		for _, active := range activity.Days {
-			if active {
-				daysActive++
-			}
-		}
-
-		switch daysActive {
-		case 1, 2:
-			sb.WriteString(fmt.Sprintf("%d Tage 👎\n", daysActive))
-		case 3:
-			sb.WriteString(fmt.Sprintf("%d Tage 🙏\n", daysActive))
-		case 4:
-			sb.WriteString(fmt.Sprintf("%d Tage ✈️🔥\n", daysActive))
-		case 5:
-			sb.WriteString(fmt.Sprintf("%d Tage 🚀🤩\n", daysActive))
-		}
-	}
-	return sb.String()
 }
