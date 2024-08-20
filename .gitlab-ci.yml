@@ -85,7 +85,7 @@ deploy:
   only:
     - main
     - master
-  rules:
-    - if: $CI_COMMIT_BRANCH
-      exists:
-        - Dockerfile
+#  rules:
+#    - if: $CI_COMMIT_BRANCH
+#      exists:
+#        - Dockerfile
