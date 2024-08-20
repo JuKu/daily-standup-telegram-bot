@@ -86,12 +86,7 @@ func main() {
 	b.Handle(telebot.OnAddedToGroup, func(c telebot.Context) error {
 		chatID := c.Chat().ID
 		chatIDs[chatID] = struct{}{} // Speichern der Chat-ID
-		return nil
-	})
-
-	b.Handle(telebot.OnAddedToGroup, func(c telebot.Context) error {
-		chatID := c.Chat().ID
-		chatIDs[chatID] = struct{}{} // Speichern der Chat-ID
+		saveChatIDs()
 		return nil
 	})
 
@@ -237,19 +232,50 @@ func sendDailyStandUp(b *telebot.Bot) {
 
 // Funktion, die Benutzer erinnert, wenn sie bis 17:00 Uhr noch nichts geschrieben haben
 func remindUsers(b *telebot.Bot) {
-	for _, activity := range userActivities {
+	ids := getChatIDs()
+
+	for _, chatID := range ids {
+		chat := &telebot.Chat{ID: chatID}
+		allWritten := checkAllUsersWritten(b, chat)
+		if !allWritten {
+			// Falls noch nicht alle geantwortet haben, sende eine Erinnerung
+			/*message := "Erinnerung: Bitte beantworte die Fragen für den Daily StandUp!"
+			_, err := b.Send(chat, message)
+			if err != nil {
+				log.Printf("Fehler beim Senden der Erinnerung an Chat %d: %v", chatID, err)
+			}*/
+
+			for _, activity := range userActivities {
+				today := time.Now().Weekday()
+				if today >= time.Monday && today <= time.Friday && !activity.Days[today-time.Monday] {
+					// Erinnere den Benutzer
+					message := fmt.Sprintf("@%s, bitte beantworte die StandUp-Fragen!", activity.UserName)
+					for chatID := range userActivities {
+						chat := &telebot.Chat{ID: chatID}
+						_, err := b.Send(chat, message)
+						if err != nil {
+							log.Printf("Fehler beim Senden der Erinnerung an Chat %d: %v", chatID, err)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/*for _, activity := range userActivities {
 		today := time.Now().Weekday()
 		if today >= time.Monday && today <= time.Friday && !activity.Days[today-time.Monday] {
 			// Erinnere den Benutzer
 			message := fmt.Sprintf("@%s, bitte beantworte die StandUp-Fragen!", activity.UserName)
 			for chatID := range userActivities {
-				_, err := b.Send(&telebot.Chat{ID: chatID}, message)
+				chat := &telebot.Chat{ID: chatID}
+				_, err := b.Send(chat, message)
 				if err != nil {
 					log.Printf("Fehler beim Senden der Erinnerung an Chat %d: %v", chatID, err)
 				}
 			}
 		}
-	}
+	}*/
 }
 
 // Funktion, die prüft, ob alle Benutzer geschrieben haben
@@ -274,14 +300,19 @@ func checkAllUsersWritten(b *telebot.Bot, chat *telebot.Chat) bool {
 
 // Funktion zum Flamen der Benutzer, die bis 22:00 Uhr noch nicht geschrieben haben
 func flameUsers(b *telebot.Bot) {
-	for _, activity := range userActivities {
-		today := time.Now().Weekday()
-		if today >= time.Monday && today <= time.Friday && !activity.Days[today-time.Monday] {
-			message := fmt.Sprintf("@%s, ich bin enttäuscht, dass du noch nicht geantwortet hast! 😠", activity.UserName)
-			for chatID := range userActivities {
-				_, err := b.Send(&telebot.Chat{ID: chatID}, message)
-				if err != nil {
-					log.Printf("Fehler beim Senden der Flame-Nachricht an Chat %d: %v", chatID, err)
+	ids := getChatIDs()
+	for _, chatID := range ids {
+		chat := &telebot.Chat{ID: chatID}
+		allWritten := checkAllUsersWritten(b, chat)
+		if !allWritten {
+			for _, activity := range userActivities {
+				today := time.Now().Weekday()
+				if today >= time.Monday && today <= time.Friday && !activity.Days[today-time.Monday] {
+					message := fmt.Sprintf("@%s, ich bin enttäuscht, dass du noch nicht geantwortet hast! 😠", activity.UserName)
+					_, err := b.Send(chat, message)
+					if err != nil {
+						log.Printf("Fehler beim Senden der Flame-Nachricht an Chat %d: %v", chatID, err)
+					}
 				}
 			}
 		}
