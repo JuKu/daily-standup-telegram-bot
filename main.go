@@ -87,6 +87,7 @@ func main() {
 		chatID := c.Chat().ID
 		chatIDs[chatID] = struct{}{} // Speichern der Chat-ID
 		saveChatIDs()
+		sendWelcomeMessage(b, c.Chat())
 		return nil
 	})
 
@@ -213,6 +214,15 @@ func saveChatIDs() {
 		}
 	}
 	writer.Flush()
+}
+
+func sendWelcomeMessage(b *telebot.Bot, chat *telebot.Chat) {
+	message := "Willkommen im Daily StandUp! 🎉 Hier ist, wie wir arbeiten:\n1. Täglich um 12:00 Uhr bekommst du eine Nachricht mit den Fragen für unser StandUp.\n2. Bitte beantworte die Fragen bis 17:00 Uhr, damit wir wissen, was du gemacht hast und ob es Hindernisse gibt.\n3. Wenn du bis 22:00 Uhr nicht geantwortet hast, werde ich dich daran erinnern.\n\nLass uns gemeinsam einen produktiven Tag haben! 🚀"
+
+	_, err := b.Send(chat, message)
+	if err != nil {
+		log.Printf("Fehler beim Senden der Willkommensnachricht an Chat %d: %v", chat.ID, err)
+	}
 }
 
 // Funktion zum Senden der täglichen StandUp-Nachricht
