@@ -57,6 +57,8 @@ func main() {
 		return
 	}
 
+	log.Println("TELEGRAM_BOT_API_KEY is available")
+
 	// Bot initialisieren
 	pref := telebot.Settings{
 		Token:  apiKey,
@@ -69,6 +71,7 @@ func main() {
 		return
 	}
 
+	log.Println("loadChatIDs")
 	loadChatIDs()
 
 	// Function to collect the activity
@@ -99,6 +102,8 @@ func main() {
 
 	// Bot starten
 	b.Start()
+
+	log.Println("Bot started successfully")
 }
 
 // Funktion zum Initialisieren des Schedulers
@@ -200,6 +205,8 @@ func loadChatIDs() {
 
 // Funktion zum Speichern der Chat-IDs in eine Datei
 func saveChatIDs() {
+	log.Println("saveChatIDs")
+
 	file, err := os.Create("chat-ids.txt")
 	if err != nil {
 		log.Fatalf("Fehler beim Erstellen der Datei chat-ids.txt: %v", err)
@@ -218,6 +225,7 @@ func saveChatIDs() {
 
 func sendWelcomeMessage(b *telebot.Bot, chat *telebot.Chat) {
 	message := "Willkommen im Daily StandUp! 🎉 Hier ist, wie wir arbeiten:\n1. Täglich um 12:00 Uhr bekommst du eine Nachricht mit den Fragen für unser StandUp.\n2. Bitte beantworte die Fragen bis 17:00 Uhr, damit wir wissen, was du gemacht hast und ob es Hindernisse gibt.\n3. Wenn du bis 22:00 Uhr nicht geantwortet hast, werde ich dich daran erinnern.\n\nLass uns gemeinsam einen produktiven Tag haben! 🚀"
+	log.Printf("Send Welcome Message to %s", chat.Title)
 
 	_, err := b.Send(chat, message)
 	if err != nil {
