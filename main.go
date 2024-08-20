@@ -79,6 +79,12 @@ func main() {
 		user := c.Sender()
 		now := time.Now()
 
+		log.Printf("Received message: %s", c.Message().Text)
+
+		chatID := c.Chat().ID
+		chatIDs[chatID] = struct{}{} // Speichern der Chat-ID
+		saveChatIDs()
+
 		// Save the activity for the current day (Monday - Friday)
 		RecordActivity(user.ID, user.Username, now)
 
