@@ -106,10 +106,10 @@ func main() {
 	// Lies die Nachrichten der Woche erneut aus, falls der Bot neu gestartet wurde
 	// Diese Funktion müsste implementiert werden, um Nachrichten erneut auszulesen und die Aktivitäten zu rekonstruieren
 
+	log.Println("Bot started successfully")
+
 	// Bot starten
 	b.Start()
-
-	log.Println("Bot started successfully")
 }
 
 // Funktion zum Initialisieren des Schedulers
