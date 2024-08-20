@@ -82,9 +82,9 @@ deploy:
     - DOCKER_BUILDKIT=1 docker build --pull -t "$CI_REGISTRY_IMAGE${tag}" .
     - docker push "$CI_REGISTRY_IMAGE${tag}"
 #    - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
-  only:
-    - main
-    - master
+  #only:
+  #  - main
+  #  - master
 #  rules:
 #    - if: $CI_COMMIT_BRANCH
 #      exists:
